@@ -1,5 +1,7 @@
 package com.api.fitzone.services;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,12 +24,27 @@ public class ClaseService {
                 .orElseThrow(() -> new RuntimeException("CLASE_NO_ENCONTRADA"));
     }
 
+    public void validarFecha(ClaseModel clase, String fechaClase) {
+        LocalDate fecha;
+        try {
+            fecha = LocalDate.parse(fechaClase);
+        } catch (DateTimeParseException | NullPointerException e) {
+            throw new RuntimeException("FECHA_INVALIDA");
+        }
+
+        if (!fecha.equals(clase.getFechaClase())) {
+            throw new RuntimeException("FECHA_INVALIDA");
+        }
+    }
+
     @Transactional(readOnly = true)
-    public Map<String, Object> consultarCupo(String idClase) {
+    public Map<String, Object> consultarCupo(String idClase, String fechaClase) {
         ClaseModel clase = obtenerClase(idClase);
+        validarFecha(clase, fechaClase);
 
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("idClase", clase.getIdClase());
+        respuesta.put("fechaClase", clase.getFechaClase());
         respuesta.put("cupoMaximo", clase.getCupoMaximo());
         respuesta.put("cupoOcupado", clase.getCupoOcupado());
         respuesta.put("cupoDisponible", clase.getCupoDisponible());

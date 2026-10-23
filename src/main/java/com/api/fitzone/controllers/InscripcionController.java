@@ -25,8 +25,9 @@ public class InscripcionController {
         try {
             String idSocio = solicitud.get("idSocio");
             String idClase = solicitud.get("idClase");
+            String fechaClase = solicitud.get("fechaClase");
 
-            InscripcionModel resultado = inscripcionService.inscribirEnClase(idSocio, idClase);
+            InscripcionModel resultado = inscripcionService.inscribirEnClase(idSocio, idClase, fechaClase);
             return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,6 +1,7 @@
 package com.api.fitzone.models;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,9 @@ public class ClaseModel {
     @Column(name = "fecha_clase", nullable = false)
     private LocalDate fechaClase;
 
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio;
+
     @JsonIgnore
     @OneToMany(mappedBy = "clase")
     private List<InscripcionModel> inscripciones = new ArrayList<>();
@@ -42,13 +46,14 @@ public class ClaseModel {
     public ClaseModel() {
     }
 
-    public ClaseModel(String idClase, String disciplina, String sucursal, int cupoMaximo, int cupoOcupado, LocalDate fechaClase) {
+    public ClaseModel(String idClase, String disciplina, String sucursal, int cupoMaximo, int cupoOcupado, LocalDate fechaClase, LocalTime horaInicio) {
         this.idClase = idClase;
         this.disciplina = disciplina;
         this.sucursal = sucursal;
         this.cupoMaximo = cupoMaximo;
         this.cupoOcupado = cupoOcupado;
         this.fechaClase = fechaClase;
+        this.horaInicio = horaInicio;
     }
 
     public String getIdClase() {
@@ -97,6 +102,14 @@ public class ClaseModel {
 
     public void setFechaClase(LocalDate fechaClase) {
         this.fechaClase = fechaClase;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
     }
 
     public List<InscripcionModel> getInscripciones() {

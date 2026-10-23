@@ -19,7 +19,13 @@ public class SocioService {
             throw new IllegalArgumentException("El ID del socio no puede estar vacío.");
         }
 
-        return socioRepository.findByIdSocioAndMembresiaVigenteTrue(idSocio)
-                .orElseThrow(() -> new RuntimeException("MEMBRESIA_VENCIDA_O_SOCIO_NO_ENCONTRADO"));
+        SocioModel socio = socioRepository.findById(idSocio)
+                .orElseThrow(() -> new RuntimeException("SOCIO_NO_ENCONTRADO"));
+
+        if (!socio.isMembresiaVigente()) {
+            throw new RuntimeException("MEMBRESIA_VENCIDA");
+        }
+
+        return socio;
     }
 }

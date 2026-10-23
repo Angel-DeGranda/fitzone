@@ -3,9 +3,11 @@ package com.api.fitzone.services;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.api.fitzone.events.InscripcionRealizadaEvent;
 import com.api.fitzone.models.ClaseModel;
 import com.api.fitzone.models.InscripcionModel;
 import com.api.fitzone.models.SocioModel;
@@ -30,13 +32,17 @@ public class InscripcionService {
     @Autowired
     private NotificacionService notificacionService;
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
     @Transactional
-    public InscripcionModel inscribirEnClase(String idSocio, String idClase) {
+    public InscripcionModel inscribirEnClase(String idSocio, String idClase, String fechaClase) {
         // 1. Validar membresía del socio
         SocioModel socio = socioService.obtenerYValidarSocioVigente(idSocio);
 
         // 2. Validar existencia de la clase
         ClaseModel clase = claseService.obtenerClase(idClase);
+        claseService.validarFecha(clase, fechaClase);
 
         // 3. Validar cupo disponible (máximo 20)
         if (clase.getCupoDisponible() <= 0) {
@@ -59,6 +65,9 @@ public class InscripcionService {
 
         // 7. Notificación asíncrona (unidireccional)
         notificacionService.enviarAvisoConfirmacion(socio, clase);
+
+        eventPublisher.publishEvent(
+                new InscripcionRealizadaEvent(inscripcionGuardada.getFolioInscripcion(), socio, clase));
 
         return inscripcionGuardada;
     }
